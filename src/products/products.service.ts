@@ -16,7 +16,7 @@ export class ProductsService {
       })
       return {
         message: 'Producto creado correctamente',
-        cliente: data
+        producto: data
       };
     } catch (error) {
       return {
@@ -28,18 +28,55 @@ export class ProductsService {
   }
 
   findAll() {
-    return `This action returns all products`;
+    return this.prisma.product.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  findOne(id: string) {
+    return this.prisma.product.findFirst({
+      where: {
+        id
+      }
+    });
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    try {
+      const data = await this.prisma.product.update({
+        where: {
+          id
+        },
+        data: {
+          ...updateProductDto
+        }
+      })
+      return {
+        message: 'Product actualizado correctamente',
+        producto: data
+      };
+    } catch (error) {
+      return {
+        message: 'Ocurrio un problema',
+        error: error
+      }
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string) {
+    try {
+      const data = await this.prisma.product.delete({
+        where: {
+          id
+        }
+      })
+      return {
+        message: 'Producto eliminado correctamente',
+        producto: data
+      };
+    } catch (error) {
+      return {
+        message: 'Ocurrio un problema',
+        error: error
+      }
+    }
   }
 }
