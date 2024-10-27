@@ -9,7 +9,6 @@ export class ClientsService {
   constructor(private prisma: PrismaService) { }
 
   async create(createClientDto: CreateClientDto) {
-    console.log('create', createClientDto)
     try {
       const data = await this.prisma.client.create({
         data: createClientDto
@@ -31,15 +30,55 @@ export class ClientsService {
     return this.prisma.client.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  findOne(id: string) {
+    return this.prisma.client.findFirst({
+      where: {
+        id
+      }
+    });
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async update(id: string, updateClientDto: UpdateClientDto) {
+    try {
+      const data = await this.prisma.client.update({
+        where: {
+          id
+        },
+        data: {
+          ...updateClientDto
+        }
+      })
+      return {
+        message: 'Cliente actualizado correctamente',
+        cliente: data
+      };
+    } catch (error) {
+      return {
+        message: 'Ocurrio un problema',
+        error: error
+      }
+    }
+
+
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async remove(id: string) {
+    try {
+      const data = await this.prisma.client.delete({
+        where: {
+          id
+        }
+      })
+      return {
+        message: 'Cliente eliminado correctamente',
+        cliente: data
+      };
+    } catch (error) {
+      return {
+        message: 'Ocurrio un problema',
+        error: error
+      }
+    }
+
   }
 }

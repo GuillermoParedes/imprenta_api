@@ -52,6 +52,8 @@ model Client {
   cellphone  String
   order      Order[]
   ranking    ClientRanking?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 }
 
 model Order {

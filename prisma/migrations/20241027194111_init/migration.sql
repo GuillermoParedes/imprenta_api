@@ -21,7 +21,9 @@ CREATE TABLE `Client` (
     `type` ENUM('NATURAL', 'JURIDICA') NOT NULL,
     `address` VARCHAR(191) NOT NULL,
     `cellphone` VARCHAR(191) NOT NULL,
-    `ranking` ENUM('BUENO', 'MALO') NOT NULL,
+    `ranking` ENUM('BUENO', 'MALO') NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -107,6 +109,7 @@ ALTER TABLE `Product` ADD CONSTRAINT `Product_categoryId_fkey` FOREIGN KEY (`cat
 
 -- AddForeignKey
 ALTER TABLE `Todo` ADD CONSTRAINT `Todo_authorId_fkey` FOREIGN KEY (`authorId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
 
 
 INSERT INTO `user` (`id`, `first_name`, `last_name`, `username`, `password`, `codeExpireAt`, `createdAt`, `updatedAt`, `role`) VALUES
