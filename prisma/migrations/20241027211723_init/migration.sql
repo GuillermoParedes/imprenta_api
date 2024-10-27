@@ -129,3 +129,11 @@ VALUES (
         '2024-10-27 14:51:00.000',
         'ADMINISTRADOR'
     );
+
+
+INSERT INTO `Category` (`id`, `name`, `description`, `createdAt`, `updatedAt`) VALUES
+('Folletos',	'Folletos',	'Impresion de folletos',	'2024-10-27 21:20:20.000',	'2024-10-27 21:20:20.000'),
+('Invitaciones',	'Invitaciones',	'Invitaciones personalizadas para sus eventos',	'2024-10-27 21:20:35.000',	'2024-10-27 21:20:35.000'),
+('Libros',	'Libros',	'Impresion de libros',	'2024-10-27 21:20:08.000',	'2024-10-27 21:20:08.000'),
+('Otros',	'Otros',	'Otro producto grafico',	'2024-10-27 21:22:28.000',	'2024-10-27 21:22:28.000'),
+('TarjetasPersonales',	'Tarjetas Personales',	'Tarjetas Personales para tu negocio',	'2024-10-27 21:21:00.000',	'2024-10-27 21:21:00.000');
