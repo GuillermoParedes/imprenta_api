@@ -1,6 +1,53 @@
+// version 2 de agosto de 2020
 {
-    "cSpell.words": [
-        "autoincrement",
-        "datasource"
-    ]
-}
+    // EDITOR
+    "editor.cursorStyle": "line", // Style cursor line
+    "editor.cursorWidth": 5, // With cursor
+    "editor.cursorSmoothCaretAnimation": "on", // Cursor animation with selected lines
+    "editor.cursorBlinking": "expand", // Cursor animation with static
+    "editor.formatOnSave": true, // Format code on save
+    "editor.formatOnPaste": true, // For code on paste
+    "editor.fontFamily": "Operator Mono, Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontSize": 15,
+    "editor.fontWeight": "400",
+    "editor.lineHeight": 30, // Letter spacing in the characters
+    "editor.letterSpacing": 0.5, // Spacing in the lines text
+    "editor.minimap.enabled": true, // Show map in the left vscode
+    "editor.tabSize": 2, // tabsize 2
+  
+    // WORKBENCH
+    "workbench.sideBar.location": "left", // position navbar vscode
+  
+    //  PRETTIER
+    "[scss]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[sql]": {
+      "editor.formatOnSave": false
+    },
+    // EXPLORER
+    "explorer.confirmDelete": true,
+    "explorer.confirmDragAndDrop": true,
+    // WINDOW
+    "window.zoomLevel": 0,
+    // SEARCH
+    "search.showLineNumbers": true
+  }

@@ -44,14 +44,14 @@ model User {
 }
 
 model Client {
-  id         String        @id @default(cuid())
+  id         String         @id @default(cuid())
   first_name String
   last_name  String
   type       ClientType
   address    String
   cellphone  String
   order      Order[]
-  ranking    ClientRanking
+  ranking    ClientRanking?
 }
 
 model Order {
@@ -102,13 +102,12 @@ model Category {
   products    Product[]
 }
 
-
 model Todo {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   title     String
-  completed Boolean @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  author      User?    @relation(fields: [authorId], references: [id])
-  authorId    String?
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  String?
 }
