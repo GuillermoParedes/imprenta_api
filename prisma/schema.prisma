@@ -38,9 +38,7 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   role         UserRole
-  products     Product[] @relation("SellerProducts")
-
-  Todo Todo[]
+  Todo         Todo[]
 }
 
 model Client {
@@ -84,13 +82,10 @@ model Product {
   description  String
   sellingPrice Float
   actualPrice  Float
-  productImage String
   stock        Int
-  sellerId     String
   categoryId   String
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  seller       User        @relation("SellerProducts", fields: [sellerId], references: [id])
   category     Category    @relation(fields: [categoryId], references: [id])
   orderItems   OrderItem[]
 }

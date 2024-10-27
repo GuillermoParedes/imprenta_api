@@ -59,9 +59,7 @@ CREATE TABLE `Product` (
     `description` VARCHAR(191) NOT NULL,
     `sellingPrice` DOUBLE NOT NULL,
     `actualPrice` DOUBLE NOT NULL,
-    `productImage` VARCHAR(191) NOT NULL,
     `stock` INTEGER NOT NULL,
-    `sellerId` VARCHAR(191) NOT NULL,
     `categoryId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -102,15 +100,32 @@ ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_orderId_fkey` FOREIGN KEY (`or
 ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Product` ADD CONSTRAINT `Product_sellerId_fkey` FOREIGN KEY (`sellerId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Product` ADD CONSTRAINT `Product_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Todo` ADD CONSTRAINT `Todo_authorId_fkey` FOREIGN KEY (`authorId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 
-
-INSERT INTO `user` (`id`, `first_name`, `last_name`, `username`, `password`, `codeExpireAt`, `createdAt`, `updatedAt`, `role`) VALUES
-('e1a8f47f-9472-11ef-92c1-0242ac120005',	'Raquel',	'Fernandez Ochoa',	'raquel',	'$2a$10$UpwqDBixGrKwxVm0mrv4Xe17iWbLDfG0jbszD5ATP0HkAEW7x9BtO',	NULL,	'2024-10-27 14:51:00.000',	'2024-10-27 14:51:00.000',	'ADMINISTRADOR');
+INSERT INTO
+    `user` (
+        `id`,
+        `first_name`,
+        `last_name`,
+        `username`,
+        `password`,
+        `codeExpireAt`,
+        `createdAt`,
+        `updatedAt`,
+        `role`
+    )
+VALUES (
+        'e1a8f47f-9472-11ef-92c1-0242ac120005',
+        'Raquel',
+        'Fernandez Ochoa',
+        'raquel',
+        '$2a$10$UpwqDBixGrKwxVm0mrv4Xe17iWbLDfG0jbszD5ATP0HkAEW7x9BtO',
+        NULL,
+        '2024-10-27 14:51:00.000',
+        '2024-10-27 14:51:00.000',
+        'ADMINISTRADOR'
+    );
