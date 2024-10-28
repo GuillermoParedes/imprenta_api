@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async login(username: string, password: string): Promise<AuthEntity> {
     const user = await this.prisma.user.findFirst({ where: { username } });

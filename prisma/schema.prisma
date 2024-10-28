@@ -57,37 +57,29 @@ model Client {
 model Order {
   id           String      @id @default(cuid())
   customerId   String
+  productId    String
   totalAmount  Float // esto seria el costo total de la sumatoria del precio de cadda producto
   dateShipping DateTime
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   status       OrderStatus
   customer     Client      @relation(fields: [customerId], references: [id])
-  items        OrderItem[]
-}
-
-model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Float
-  order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  product      Product     @relation(fields: [productId], references: [id])
 }
 
 model Product {
-  id           String      @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String
   description  String
   sellingPrice Float
   actualPrice  Float
   stock        Int
   categoryId   String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  category     Category    @relation(fields: [categoryId], references: [id])
-  orderItems   OrderItem[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  category     Category @relation(fields: [categoryId], references: [id])
+
+  Order Order[]
 }
 
 model Category {

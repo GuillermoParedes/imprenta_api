@@ -32,22 +32,12 @@ CREATE TABLE `Client` (
 CREATE TABLE `Order` (
     `id` VARCHAR(191) NOT NULL,
     `customerId` VARCHAR(191) NOT NULL,
+    `productId` VARCHAR(191) NOT NULL,
     `totalAmount` DOUBLE NOT NULL,
     `dateShipping` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `status` ENUM('PENDIENTE', 'ENTREGADO', 'CANCELADO') NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `OrderItem` (
-    `id` VARCHAR(191) NOT NULL,
-    `orderId` VARCHAR(191) NOT NULL,
-    `productId` VARCHAR(191) NOT NULL,
-    `quantity` INTEGER NOT NULL,
-    `price` DOUBLE NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -94,10 +84,7 @@ CREATE TABLE `Todo` (
 ALTER TABLE `Order` ADD CONSTRAINT `Order_customerId_fkey` FOREIGN KEY (`customerId`) REFERENCES `Client`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Order` ADD CONSTRAINT `Order_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Product` ADD CONSTRAINT `Product_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -105,30 +92,8 @@ ALTER TABLE `Product` ADD CONSTRAINT `Product_categoryId_fkey` FOREIGN KEY (`cat
 -- AddForeignKey
 ALTER TABLE `Todo` ADD CONSTRAINT `Todo_authorId_fkey` FOREIGN KEY (`authorId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
-
-INSERT INTO
-    `user` (
-        `id`,
-        `first_name`,
-        `last_name`,
-        `username`,
-        `password`,
-        `codeExpireAt`,
-        `createdAt`,
-        `updatedAt`,
-        `role`
-    )
-VALUES (
-        'e1a8f47f-9472-11ef-92c1-0242ac120005',
-        'Raquel',
-        'Fernandez Ochoa',
-        'raquel',
-        '$2a$10$UpwqDBixGrKwxVm0mrv4Xe17iWbLDfG0jbszD5ATP0HkAEW7x9BtO',
-        NULL,
-        '2024-10-27 14:51:00.000',
-        '2024-10-27 14:51:00.000',
-        'ADMINISTRADOR'
-    );
+INSERT INTO `User` (`id`, `first_name`, `last_name`, `username`, `password`, `codeExpireAt`, `createdAt`, `updatedAt`, `role`) VALUES
+('58463cfd-94d8-11ef-92c1-0242ac120005',	'Raquel',	'Fernandez Ochoa',	'raquel',	'$2a$10$UpwqDBixGrKwxVm0mrv4Xe17iWbLDfG0jbszD5ATP0HkAEW7x9BtO',	NULL,	'2024-10-28 02:57:19.000',	'2024-10-28 02:57:19.000',	'ADMINISTRADOR');
 
 
 INSERT INTO `Category` (`id`, `name`, `description`, `createdAt`, `updatedAt`) VALUES
