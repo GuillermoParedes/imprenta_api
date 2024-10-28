@@ -23,10 +23,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   private addMiddlewares() {
     // Middleware de ejemplo para loggear todas las consultas
     this.$use(async (params, next) => {
-      console.log(`Executing query: ${params.model}.${params.action}`);
-      console.log(`Query params: ${JSON.stringify(params.args)}`);
+      // console.log(`Executing query: ${params.model}.${params.action}`);
+      // console.log(`Query params: ${JSON.stringify(params.args)}`);
       const result = await next(params);
-      console.log(`Query result: ${JSON.stringify(result)}`);
+      // console.log(`Query result: ${JSON.stringify(result)}`);
       return result;
     });
   }
