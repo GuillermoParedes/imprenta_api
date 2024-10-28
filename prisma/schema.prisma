@@ -59,6 +59,7 @@ model Order {
   customerId   String
   productId    String
   totalAmount  Float // esto seria el costo total de la sumatoria del precio de cadda producto
+  quantity     Int
   dateShipping DateTime
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt

@@ -34,6 +34,7 @@ CREATE TABLE `Order` (
     `customerId` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
     `totalAmount` DOUBLE NOT NULL,
+    `quantity` INTEGER NOT NULL,
     `dateShipping` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
