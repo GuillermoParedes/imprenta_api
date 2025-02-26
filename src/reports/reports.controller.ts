@@ -6,7 +6,7 @@ import { Response } from 'express';
 
 @Controller('reports')
 export class ReportsController {
-  constructor(private readonly reportsService: ReportsService) {}
+  constructor(private readonly reportsService: ReportsService) { }
 
 
 
@@ -17,6 +17,11 @@ export class ReportsController {
 
   @Get('download') // Usa 'download' para evitar conflictos con otra ruta
   generatePdf(@Res() res: Response) {
-    return this.reportsService.generatePdf(res);
+    const reportTitle = 'Reporte de Ventas';
+    const tableData = [
+      { name: 'Producto A', description: 'Descripción A', quantity: 10 },
+      { name: 'Producto B', description: 'Descripción B', quantity: 20 },
+    ];
+    return this.reportsService.generatePdf(reportTitle, tableData, res);
   }
 }
