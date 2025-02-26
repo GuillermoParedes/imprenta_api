@@ -8,20 +8,17 @@ import { Response } from 'express';
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) { }
 
-
-
-  // @Get()
-  // generatePdf(@Res() res: Response) {
-  //   this.reportsService.generatePdf(res);
-  // }
-
-  @Get('download') // Usa 'download' para evitar conflictos con otra ruta
-  generatePdf(@Res() res: Response) {
-    const reportTitle = 'Reporte de Ventas';
-    const tableData = [
-      { name: 'Producto A', description: 'Descripción A', quantity: 10 },
-      { name: 'Producto B', description: 'Descripción B', quantity: 20 },
-    ];
-    return this.reportsService.generatePdf(reportTitle, tableData, res);
+  @Get('summary-clients-natural')
+  getSummaryClientsNatural(@Res() res: Response) {
+    return this.reportsService.getSummaryClientsNatural(res);
   }
+  @Get('summary-clients-juridica')
+  getSummaryClientsJuridica(@Res() res: Response) {
+    return this.reportsService.getSummaryClientsJuridica(res);
+  }
+  @Get('stock-products')
+  getStockProducts(@Res() res: Response) {
+    return this.reportsService.getStockProducts(res);
+  }
+
 }
