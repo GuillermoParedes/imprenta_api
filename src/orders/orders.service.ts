@@ -8,7 +8,21 @@ export class OrdersService {
 
   constructor(private prisma: PrismaService) { }
 
-
+  async updateStock(productId: string, newStock: number) {
+    const _product = await this.prisma.product.findFirst({
+      where: {
+        id: productId,
+      },
+    })
+    return this.prisma.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        stock: _product.stock - newStock
+      }
+    })
+  }
   async create(createOrderDto: CreateOrderDto) {
     try {
       console.log('create', createOrderDto)
@@ -19,6 +33,7 @@ export class OrdersService {
           status: 'PENDIENTE'
         }
       })
+      this.updateStock(createOrderDto.productId, createOrderDto.quantity)
       return {
         message: 'Pedido creado correctamente',
         pedido: data
