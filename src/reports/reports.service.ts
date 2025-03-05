@@ -14,20 +14,21 @@ export class ReportsService extends PrismaService {
       },
     });
 
-    const countsByCategory = await this.product.groupBy({
-      by: ['categoryId'],
-      _count: {
-        id: true,
-      },
+    const productsByCategory = await this.product.findMany({
+      orderBy: {
+        name: 'asc'
+      }
     });
-    const chartData = categories.map(category => ({
-      name: category.name,
-      count: countsByCategory.find(c => c.categoryId === category.id)?._count.id || 0
+    const chartData = productsByCategory.map(product => ({
+      category: categories.find(c => c.id === product.categoryId)?.name || 'Desconocido',
+      productName: product.name,
+      count: product.stock,
     }));
     const title = 'Stock de Productos';
     const columns = [
-      { title: 'Producto', key: 'name', width: 250 },
-      { title: 'Cantidad disponible', key: 'count', width: 150 },
+      { title: 'Tipo de Producto', key: 'category', width: 150 },
+      { title: 'Nombre del Producto', key: 'productName', width: 150 },
+      { title: 'Cantidad Disponible', key: 'count', width: 100 },
     ];
     return this.generatePdf(title, chartData, columns, res);
   }
@@ -112,7 +113,7 @@ export class ReportsService extends PrismaService {
   private addTable(doc: PDFDocument, tableData: any[], columns: any[]) {
     let startX = 50;
     let startY = 120;
-    const rowHeight = 30;
+    const rowHeight = 40;
     const pageHeight = 750; // Altura total utilizable
 
     // Dibujar encabezados con fondo azul
