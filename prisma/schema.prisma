@@ -38,6 +38,27 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   role         UserRole
+
+  userRole userRole[]
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @db.VarChar(25)
+  descripcion String   @db.VarChar(250)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userRole userRole[]
+}
+
+model userRole {
+  id     String @id @default(cuid())
+  roleId String
+  userId String
+
+  role Role @relation(fields: [roleId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Client {
@@ -54,18 +75,29 @@ model Client {
 }
 
 model Order {
-  id             String      @id @default(cuid())
-  customerId     String
-  productId      String
-  totalAmount    Float // esto seria el costo total de la sumatoria del precio de cadda producto
-  quantity       Int
-  dateShipping   DateTime
-  advancePayment Float
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  status         OrderStatus
-  customer       Client      @relation(fields: [customerId], references: [id])
-  product        Product     @relation(fields: [productId], references: [id])
+  id           String      @id @default(cuid())
+  customerId   String
+  productId    String
+  totalAmount  Float // esto seria el costo total de la sumatoria del precio de cadda producto
+  quantity     Int
+  dateShipping DateTime
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  status       OrderStatus
+  customer     Client      @relation(fields: [customerId], references: [id])
+  product      Product     @relation(fields: [productId], references: [id])
+
+  OrderItem OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Product {
@@ -81,6 +113,8 @@ model Product {
   category     Category @relation(fields: [categoryId], references: [id])
 
   Order Order[]
+
+  OrderItem OrderItem[]
 }
 
 model Category {

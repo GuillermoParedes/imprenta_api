@@ -70,7 +70,7 @@ export class ReportsService extends PrismaService {
   generatePdf(reportTitle: string, tableData: any[], columns: any[], res: Response) {
     console.log('🔹 Generando PDF...');
 
-    const doc = new PDFDocument({ size: 'A4', margin: 50 });
+    const doc = new PDFDocument({ size: 'Legal', margin: 50 });
     const formattedTitle = reportTitle.replace(/\s+/g, '_'); // Reemplazar espacios por _
     const formattedDate = new Date().toISOString().split('T')[0]; // Obtener fecha YYYY-MM-DD
     const fileName = `${formattedTitle}_${formattedDate}.pdf`;
