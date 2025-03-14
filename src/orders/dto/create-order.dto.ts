@@ -21,6 +21,11 @@ export class CreateOrderDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @ApiProperty({ description: 'Adelanto del producto' })
+  advancePayment: number;
+
+  @IsNumber()
+  @IsNotEmpty()
   @ApiProperty({ description: 'Cantidad del producto' })
   quantity: number;
 

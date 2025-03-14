@@ -38,7 +38,6 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   role         UserRole
-  Todo         Todo[]
 }
 
 model Client {
@@ -55,17 +54,18 @@ model Client {
 }
 
 model Order {
-  id           String      @id @default(cuid())
-  customerId   String
-  productId    String
-  totalAmount  Float // esto seria el costo total de la sumatoria del precio de cadda producto
-  quantity     Int
-  dateShipping DateTime
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  status       OrderStatus
-  customer     Client      @relation(fields: [customerId], references: [id])
-  product      Product     @relation(fields: [productId], references: [id])
+  id             String      @id @default(cuid())
+  customerId     String
+  productId      String
+  totalAmount    Float // esto seria el costo total de la sumatoria del precio de cadda producto
+  quantity       Int
+  dateShipping   DateTime
+  advancePayment Float
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  status         OrderStatus
+  customer       Client      @relation(fields: [customerId], references: [id])
+  product        Product     @relation(fields: [productId], references: [id])
 }
 
 model Product {
@@ -90,14 +90,4 @@ model Category {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   products    Product[]
-}
-
-model Todo {
-  id        Int      @id @default(autoincrement())
-  title     String
-  completed Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  String?
 }

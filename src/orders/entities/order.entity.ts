@@ -18,6 +18,8 @@ export class OrderEntity implements Order {
   @ApiProperty({ description: 'Costo total de la orden' })
   totalAmount: number;
 
+  @ApiProperty({ description: 'Adelanto de la orden' })
+  advancePayment: number;
 
   @ApiProperty({ description: 'Cantidad de la orden' })
   quantity: number;
