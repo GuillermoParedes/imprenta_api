@@ -39,6 +39,7 @@ export class OrdersService {
         pedido: data
       };
     } catch (error) {
+      console.log("error", error)
       return {
         message: 'Ocurrio un problema',
         error: error
