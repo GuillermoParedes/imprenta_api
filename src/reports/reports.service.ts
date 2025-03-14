@@ -6,7 +6,42 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ReportsService extends PrismaService {
-  async getStockProducts(res: Response) {
+  async getOrders(res: Response, params: any) {
+    const pedidos = await this.order.findMany({
+      where: {
+        status: params.status,
+        dateShipping: {
+          gte: params.startDate ? new Date(new Date(params.startDate).setUTCHours(0, 0, 0, 0)) : undefined,
+          lte: params.endDate ? new Date(new Date(params.endDate).setUTCHours(23, 59, 59, 999)) : undefined
+        }
+      },
+      include: {
+        customer: true,
+        product: true,
+      },
+      orderBy: {
+        dateShipping: 'desc'
+      }
+    })
+
+    const chartData = pedidos.map(item => {
+      return {
+        ...item,
+        productName: item.product.name
+      }
+    })
+    const title = 'Pedidos';
+    const columns = [
+      { title: 'Fecha de entrega', key: 'dateShipping', width: 150 },
+      { title: 'Nombre del Producto', key: 'productName', width: 150 },
+      { title: 'Cantidad del producto', key: 'quantity', width: 100 },
+      { title: 'Costo totaal', key: 'totalAmount', width: 100 },
+    ];
+    return this.generatePdf(title, chartData, columns, res);
+
+  }
+
+  async getStockProducts(res: Response, params: any) {
     const categories = await this.category.findMany({
       select: {
         id: true,
@@ -15,6 +50,12 @@ export class ReportsService extends PrismaService {
     });
 
     const productsByCategory = await this.product.findMany({
+      where: {
+        createdAt: {
+          gte: params.startDate ? new Date(new Date(params.startDate).setUTCHours(0, 0, 0, 0)) : undefined,
+          lte: params.endDate ? new Date(new Date(params.endDate).setUTCHours(23, 59, 59, 999)) : undefined
+        }
+      },
       orderBy: {
         name: 'asc'
       }
@@ -32,10 +73,14 @@ export class ReportsService extends PrismaService {
     ];
     return this.generatePdf(title, chartData, columns, res);
   }
-  async getSummaryClientsJuridica(res: Response) {
+  async getSummaryClientsJuridica(res: Response, params: any) {
     const clients = await this.client.findMany({
       where: {
-        type: 'JURIDICA'
+        type: 'JURIDICA',
+        createdAt: {
+          gte: params.startDate ? new Date(new Date(params.startDate).setUTCHours(0, 0, 0, 0)) : undefined,
+          lte: params.endDate ? new Date(new Date(params.endDate).setUTCHours(23, 59, 59, 999)) : undefined
+        }
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -49,10 +94,14 @@ export class ReportsService extends PrismaService {
     return this.generatePdf(title, clients, columns, res);
   }
 
-  async getSummaryClientsNatural(res: Response) {
+  async getSummaryClientsNatural(res: Response, params: any) {
     const clients = await this.client.findMany({
       where: {
-        type: 'NATURAL'
+        type: 'NATURAL',
+        createdAt: {
+          gte: params.startDate ? new Date(new Date(params.startDate).setUTCHours(0, 0, 0, 0)) : undefined,
+          lte: params.endDate ? new Date(new Date(params.endDate).setUTCHours(23, 59, 59, 999)) : undefined
+        }
       },
       orderBy: { createdAt: 'desc' },
     });
