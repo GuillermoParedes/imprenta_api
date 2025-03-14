@@ -30,6 +30,20 @@ export class ClientsService {
     return this.prisma.client.findMany();
   }
 
+  getOrders(id: string) {
+    return this.prisma.order.findMany({
+      where: {
+        customerId: id
+      },
+      include: {
+        product: true
+      },
+      orderBy: {
+        dateShipping: 'desc'
+      }
+    })
+  }
+
   findOne(id: string) {
     return this.prisma.client.findFirst({
       where: {
