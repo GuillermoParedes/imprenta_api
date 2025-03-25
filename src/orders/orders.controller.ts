@@ -36,4 +36,10 @@ export class OrdersController {
   remove(@Param('id') id: string) {
     return this.ordersService.remove(id);
   }
+
+  @Get('revenue/day')
+  getRevenuebyDay() {
+    return this.ordersService.getRevenueByDay()
+  }
+
 }

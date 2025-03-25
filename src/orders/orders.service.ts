@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class OrdersService {
-
+  logger = new Logger(OrdersService.name)
   constructor(private prisma: PrismaService) { }
 
   async updateStock(productId: string, newStock: number) {
@@ -104,4 +104,92 @@ export class OrdersService {
       }
     }
   }
+
+  async getRevenueByDay() {
+    const today = {
+      gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+      lte: new Date(new Date().setUTCHours(23, 59, 59, 999))
+    }
+    const revenuesEntregados = await this.prisma.order.findMany({
+      where: {
+        status: 'ENTREGADO',
+        dateShipping: {
+          lte: today.lte
+        }
+      },
+      orderBy: {
+        dateShipping: 'asc'
+      }
+    })
+    const revenuesPendientes = await this.prisma.order.findMany({
+      where: {
+        status: 'PENDIENTE',
+        dateShipping: {
+          lte: today.lte
+        }
+      },
+      orderBy: {
+        dateShipping: 'asc'
+      }
+    })
+    const revenuesEntregadosToday = await this.prisma.order.findMany({
+      where: {
+        status: 'ENTREGADO',
+        dateShipping: {
+          ...today
+        }
+      },
+      orderBy: {
+        dateShipping: 'asc'
+      }
+    })
+    const revenuesPendientesToday = await this.prisma.order.findMany({
+      where: {
+        status: 'PENDIENTE',
+        dateShipping: {
+          ...today
+        }
+      },
+      orderBy: {
+        dateShipping: 'asc'
+      }
+    })
+    const totalEntregados = revenuesEntregados.reduce((prev, curr) => {
+
+      prev = prev + curr.totalAmount
+      return prev
+    }, 0)
+    return {
+      untilToday: {
+        done: {
+          count: revenuesEntregados.length,
+          money: totalEntregados
+        },
+        pending: {
+          count: revenuesPendientes.length,
+          money: revenuesPendientes.reduce((prev, curr) => {
+            prev = prev + curr.advancePayment
+            return prev
+          }, 0)
+        }
+      },
+      today: {
+        done: {
+          count: revenuesEntregadosToday.length,
+          money: revenuesEntregadosToday.reduce((prev, curr) => {
+            prev = prev + curr.totalAmount
+            return prev
+          }, 0)
+        },
+        pending: {
+          count: revenuesPendientesToday.length,
+          money: revenuesPendientesToday.reduce((prev, curr) => {
+            prev = prev + curr.advancePayment
+            return prev
+          }, 0)
+        }
+      }
+    }
+  }
+
 }
