@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as PDFDocument from 'pdfkit';
 import { Response } from 'express';
+import * as fs from 'fs';
 import * as path from 'path';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ReportsService extends PrismaService {
   async getRevenue(res: Response, params: any) {
-    const pedidosEntregados = await this.order.findMany({
+    const pedidosEntregados = (await this.order.findMany({
       where: {
         status: 'ENTREGADO',
         dateShipping: {
@@ -15,8 +16,18 @@ export class ReportsService extends PrismaService {
           lte: params.endDate ? new Date(new Date(params.endDate).setUTCHours(23, 59, 59, 999)) : undefined
         }
       },
+      include: {
+        customer: true,
+        product: true
+      },
       orderBy: {
         dateShipping: 'desc'
+      }
+    })).map(item => {
+      return {
+        ...item,
+        productName: item.product.name,
+        curstomeName: `${item.customer.first_name} ${item.customer.last_name}`
       }
     })
     const pedidosPendientes = await this.order.findMany({
@@ -27,6 +38,10 @@ export class ReportsService extends PrismaService {
           lte: params.endDate ? new Date(new Date(params.endDate).setUTCHours(23, 59, 59, 999)) : undefined
         }
       },
+      include: {
+        customer: true,
+        product: true
+      },
       orderBy: {
         dateShipping: 'desc'
       }
@@ -35,45 +50,45 @@ export class ReportsService extends PrismaService {
     // Totales
     const totalEntregado = pedidosEntregados.reduce((acc, p) => acc + Number(p.totalAmount || 0), 0);
     const totalPendiente = pedidosPendientes.reduce((acc, p) => acc + Number(p.advancePayment || 0), 0);
+    const total = totalEntregado + totalPendiente;
 
-    const doc = new PDFDocument();
-
-    // Enviar como descarga
+    const doc = new PDFDocument({ margin: 50 });
+    const formattedTitle = 'Total de Ingresos'; // Reemplazar espacios por _
+    const formattedDate = new Date().toISOString().split('T')[0]; // Obtener fecha YYYY-MM-DD
+    const fileName = `${formattedTitle}_${formattedDate}.pdf`;
+    // Configuración de respuesta HTTP
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="reporte-pedidos.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+
 
     doc.pipe(res);
 
-    doc.fontSize(20).text('Reporte de Ingresos', { align: 'center' });
-    doc.moveDown();
+    // Agregar encabezado
+    this.addHeader(doc, 'Total de Ingresos');
+    doc.fontSize(10).text(`Total entregado: Bs. ${totalEntregado.toFixed(2)}`, {
+      align: 'right'
+    });
+    doc.text(`Total pendiente: Bs. ${totalPendiente.toFixed(2)}`, {
+      align: 'right'
+    });
+    doc.text(`Total general: Bs. ${total.toFixed(2)}`, {
+      align: 'right'
+    });
+    doc.moveDown(5);
+    // Agregar tabla con mejor manejo de espacio
+    const columns = [
+      { title: 'Fecha de entrega', key: 'dateShipping', width: 150 },
+      { title: 'Nombre del Producto', key: 'productName', width: 150 },
+      { title: 'Cantidad del producto', key: 'quantity', width: 100 },
+      { title: 'Costo total', key: 'totalAmount', width: 100 },
+    ];
+    this.addTable(doc, pedidosEntregados, columns);
 
-    if (params.startDate && params.endDate) {
-      doc.fontSize(12).text(`Rango de fechas: ${params.startDate || '---'} al ${params.endDate || '---'}`);
-      doc.moveDown();
-    } else if (params.startDate) {
-      doc.fontSize(12).text(`Hasta la fecha: ${params.startDate}`);
-      doc.moveDown();
-    } else if (params.endDate) {
-      doc.fontSize(12).text(`Hasta la fecha: ${params.endDate}`);
-      doc.moveDown();
-    }
-
-
-    doc.fontSize(14).fillColor('green').text(`Entregados`, { underline: true });
-    doc.fillColor('black').text(`- Cantidad: ${pedidosEntregados.length}`);
-    doc.text(`- Total: Bs. ${totalEntregado.toFixed(2)}`);
-    doc.moveDown();
-
-    doc.fontSize(14).fillColor('red').text(`Pendientes`, { underline: true });
-    doc.fillColor('black').text(`- Cantidad: ${pedidosPendientes.length}`);
-    doc.text(`- Total: Bs. ${totalPendiente.toFixed(2)}`);
-    doc.moveDown();
-
-    doc.fontSize(10).fillColor('gray').text(`Generado el: ${new Date().toLocaleString()}`);
-
+    // Agregar pie de página
+    this.addFooter(doc);
     doc.end();
-
   }
+
   async getOrders(res: Response, params: any) {
     const pedidos = await this.order.findMany({
       where: {
@@ -229,7 +244,7 @@ export class ReportsService extends PrismaService {
 
   private addTable(doc: PDFDocument, tableData: any[], columns: any[]) {
     let startX = 50;
-    let startY = 120;
+    let startY = 180;
     const rowHeight = 40;
     const pageHeight = 750; // Altura total utilizable
 
@@ -270,9 +285,11 @@ export class ReportsService extends PrismaService {
 
       let x = startX;
       columns.forEach((col) => {
+        const rawValue = row[col.key];
+        const displayValue = col.key == 'dateShipping' ? this.formatDate(rawValue) : rawValue;
         doc
           .fillColor('#333')
-          .text(row[col.key] || '-', x + 5, y + 8, {
+          .text(displayValue || '-', x + 5, y + 8, {
             width: col.width,
             align: 'center',
           });
@@ -284,7 +301,13 @@ export class ReportsService extends PrismaService {
 
     doc.moveDown();
   }
-
+  private formatDate(value: any): string {
+    const date = new Date(value);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().slice(0, 10); // YYYY-MM-DD
+    }
+    return value;
+  }
   private addFooter(doc: PDFDocument) {
     const now = new Date();
     const formattedDate = now.toLocaleString('es-ES');
