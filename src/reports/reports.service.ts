@@ -6,6 +6,74 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ReportsService extends PrismaService {
+  async getRevenue(res: Response, params: any) {
+    const pedidosEntregados = await this.order.findMany({
+      where: {
+        status: 'ENTREGADO',
+        dateShipping: {
+          gte: params.startDate ? new Date(new Date(params.startDate).setUTCHours(0, 0, 0, 0)) : undefined,
+          lte: params.endDate ? new Date(new Date(params.endDate).setUTCHours(23, 59, 59, 999)) : undefined
+        }
+      },
+      orderBy: {
+        dateShipping: 'desc'
+      }
+    })
+    const pedidosPendientes = await this.order.findMany({
+      where: {
+        status: 'PENDIENTE',
+        dateShipping: {
+          gte: params.startDate ? new Date(new Date(params.startDate).setUTCHours(0, 0, 0, 0)) : undefined,
+          lte: params.endDate ? new Date(new Date(params.endDate).setUTCHours(23, 59, 59, 999)) : undefined
+        }
+      },
+      orderBy: {
+        dateShipping: 'desc'
+      }
+    })
+    console.log('GENERADO REPORTE DIARIO')
+    // Totales
+    const totalEntregado = pedidosEntregados.reduce((acc, p) => acc + Number(p.totalAmount || 0), 0);
+    const totalPendiente = pedidosPendientes.reduce((acc, p) => acc + Number(p.advancePayment || 0), 0);
+
+    const doc = new PDFDocument();
+
+    // Enviar como descarga
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="reporte-pedidos.pdf"`);
+
+    doc.pipe(res);
+
+    doc.fontSize(20).text('Reporte de Ingresos', { align: 'center' });
+    doc.moveDown();
+
+    if (params.startDate && params.endDate) {
+      doc.fontSize(12).text(`Rango de fechas: ${params.startDate || '---'} al ${params.endDate || '---'}`);
+      doc.moveDown();
+    } else if (params.startDate) {
+      doc.fontSize(12).text(`Hasta la fecha: ${params.startDate}`);
+      doc.moveDown();
+    } else if (params.endDate) {
+      doc.fontSize(12).text(`Hasta la fecha: ${params.endDate}`);
+      doc.moveDown();
+    }
+
+
+    doc.fontSize(14).fillColor('green').text(`Entregados`, { underline: true });
+    doc.fillColor('black').text(`- Cantidad: ${pedidosEntregados.length}`);
+    doc.text(`- Total: Bs. ${totalEntregado.toFixed(2)}`);
+    doc.moveDown();
+
+    doc.fontSize(14).fillColor('red').text(`Pendientes`, { underline: true });
+    doc.fillColor('black').text(`- Cantidad: ${pedidosPendientes.length}`);
+    doc.text(`- Total: Bs. ${totalPendiente.toFixed(2)}`);
+    doc.moveDown();
+
+    doc.fontSize(10).fillColor('gray').text(`Generado el: ${new Date().toLocaleString()}`);
+
+    doc.end();
+
+  }
   async getOrders(res: Response, params: any) {
     const pedidos = await this.order.findMany({
       where: {
